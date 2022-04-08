@@ -10,6 +10,7 @@ require "optparse"
 @pastel = Pastel.new
 START = @pastel.green.bold("$")
 DONE =  "#{@pastel.blue.bold("!")} Done."
+ERROR =  "#{@pastel.red.bold("!")} Error:"
 
 
 def select_context()
@@ -36,6 +37,10 @@ end
 
 def select_namespace(context)
    namespaces, err = @cmd.run("kubectl --context=#{context} get namespaces -o name | cut -c 11-")
+   if namespaces.nil? or namespaces.match(/^error/) or namespaces.empty? 
+      puts "#{ERROR} You must be logged in to the server (Unauthorized)"
+      exit(false)
+   end
    namespaces = namespaces.split("\n")
    question = "#{START} Select namespace:"
 
